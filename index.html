@@ -77,7 +77,9 @@
     <header class="flex justify-between items-center mb-6">
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <i data-lucide="wallet" class="text-rose-700"></i> mis movimientos ヨネ
+          <!-- Ícono personalizado de billetera -->
+          <img src="billetera.png" alt="Billetera Icono" class="w-8 h-8 object-contain">
+          mis movimientos ヨネ
         </h1>
         <p class="text-xs text-slate-700 mt-1 font-medium">HUD de Control Financiero Personal</p>
       </div>
@@ -434,7 +436,6 @@
       if (opcionCategoria === '3') categoriaSeleccionada = 'internet';
       if (opcionCategoria === '4') categoriaSeleccionada = 'otros';
 
-      // Añadir movimiento de gasto
       movimientos.push({
         id: Date.now(),
         desc: deseo.nombre,
@@ -443,9 +444,7 @@
         fecha: obtenerFechaActual()
       });
 
-      // Eliminar de la lista de deseos
       deseos = deseos.filter(d => d.id !== id);
-
       guardarYActualizar();
     }
 
@@ -726,4 +725,4 @@
     render();
   </script>
 </body>
-</html>
+</html>             
