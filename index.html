@@ -101,7 +101,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <h2 id="total-ingresos" class="text-3xl font-bold text-emerald-400">$0</h2>
+          <h2 id="total-ingresos" class="text-3xl font-bold text-emerald-400">$0,00</h2>
         </div>
       </div>
 
@@ -114,7 +114,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <h2 id="total-gastos" class="text-3xl font-bold text-rose-400">$0</h2>
+          <h2 id="total-gastos" class="text-3xl font-bold text-rose-400">$0,00</h2>
         </div>
       </div>
 
@@ -127,7 +127,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <h2 id="total-restante" class="text-3xl font-bold text-purple-300">$0</h2>
+          <h2 id="total-restante" class="text-3xl font-bold text-purple-300">$0,00</h2>
         </div>
       </div>
 
@@ -145,7 +145,7 @@
         </div>
         <div>
           <label class="block text-xs text-slate-300 mb-1">Monto ($)</label>
-          <input type="number" id="monto" placeholder="0.00" min="0" step="any" required class="w-full rounded-xl p-2.5 text-sm glass-input">
+          <input type="number" id="monto" placeholder="0.00" min="0" step="0.01" required class="w-full rounded-xl p-2.5 text-sm glass-input">
         </div>
         <div>
           <label class="block text-xs text-slate-300 mb-1">Categoría</label>
@@ -222,6 +222,10 @@
       otros: { label: 'Otros', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30' }
     };
 
+    function formatearMonto(num) {
+      return num.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     function guardarYActualizar() {
       localStorage.setItem('billetera_movimientos', JSON.stringify(movimientos));
       render();
@@ -252,7 +256,7 @@
       guardarYActualizar();
     }
 
-    // Editar la plata en mano directamente sin registrar un movimiento con nombre
+    // Editar la plata en mano directamente
     function editarDineroEnMano() {
       const ingresoActual = movimientos.find(m => m.categoria === 'ingreso' && m.desc === 'Dinero Inicial');
       const montoActual = ingresoActual ? ingresoActual.monto : 0;
@@ -260,7 +264,8 @@
       const nuevoMontoInput = prompt('Ingresa el nuevo total de Plata en Mano ($):', montoActual);
       if (nuevoMontoInput === null) return;
 
-      const nuevoMonto = parseFloat(nuevoMontoInput);
+      // Reemplaza punto o coma si el usuario escribe centavos
+      const nuevoMonto = parseFloat(nuevoMontoInput.replace(',', '.'));
       if (isNaN(nuevoMonto) || nuevoMonto < 0) return;
 
       // Reemplaza o agrega el registro inicial de ingresos
@@ -317,7 +322,7 @@
             </div>
             <div class="flex items-center gap-3">
               <span class="text-sm font-bold ${m.categoria === 'ingreso' ? 'text-emerald-400' : 'text-slate-200'}">
-                ${m.categoria === 'ingreso' ? '+' : '-'}$${m.monto.toLocaleString('es-AR')}
+                ${m.categoria === 'ingreso' ? '+' : '-'}$${formatearMonto(m.monto)}
               </span>
               <button onclick="eliminarMovimiento(${m.id})" class="text-slate-500 hover:text-rose-400 transition-colors">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -344,9 +349,9 @@
 
       const restante = ingresos - gastos;
 
-      totalIngresosEl.textContent = `$${ingresos.toLocaleString('es-AR')}`;
-      totalGastosEl.textContent = `$${gastos.toLocaleString('es-AR')}`;
-      totalRestanteEl.textContent = `$${restante.toLocaleString('es-AR')}`;
+      totalIngresosEl.textContent = `$${formatearMonto(ingresos)}`;
+      totalGastosEl.textContent = `$${formatearMonto(gastos)}`;
+      totalRestanteEl.textContent = `$${formatearMonto(restante)}`;
 
       lucide.createIcons();
     }
