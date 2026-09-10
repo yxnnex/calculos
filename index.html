@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>mis movimientos ヨネ</title>
+  
+  <!-- Ícono para la pestaña del navegador (favicon) -->
+  <link rel="icon" type="image/png" href="billetera.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -77,7 +81,7 @@
     <header class="flex justify-between items-center mb-6">
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <!-- Ícono personalizado de billetera -->
+          <!-- Ícono de la billetera en el título -->
           <img src="billetera.png" alt="Billetera Icono" class="w-8 h-8 object-contain">
           mis movimientos ヨネ
         </h1>
@@ -222,7 +226,7 @@
       <!-- COLUMNA DERECHA -->
       <div class="space-y-6">
         
-        <!-- CUOTAS PENDIENTES CON FECHA DE VENCIMIENTO -->
+        <!-- CUOTAS PENDIENTES -->
         <section class="glass-card p-6 space-y-5 border-indigo-600/20">
           <div class="border-b border-slate-900/10 pb-3">
             <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -627,7 +631,6 @@
         listaVariables.innerHTML = '<p class="text-xs text-slate-600 italic text-center py-4">Sin gastos variables registrados</p>';
       }
 
-      // Render Planes de Cuotas Pendientes
       if (planesCuotas.length === 0) {
         listaCuotasPendientes.innerHTML = '<p class="text-xs text-slate-600 italic text-center py-4">No tienes cuotas registradas</p>';
       } else {
@@ -666,13 +669,11 @@
         });
       }
 
-      // Cálculo de Saldo Real Disponible
       const restante = ingresos - gastos;
 
       totalGastosEl.textContent = `$${formatearMonto(gastos)}`;
       totalRestanteEl.textContent = `$${formatearMonto(restante)}`;
 
-      // Render Lista de Deseos
       if (deseos.length === 0) {
         listaDeseos.innerHTML = '<p class="text-xs text-slate-600 italic text-center py-4">No tienes deseos guardados</p>';
       } else {
@@ -725,4 +726,4 @@
     render();
   </script>
 </body>
-</html>             
+</html>
