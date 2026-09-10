@@ -52,6 +52,14 @@
       background: rgba(244, 63, 94, 0.4);
       box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
     }
+    /* Scroll personalizado para la lista de ingresos */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body class="p-4 md:p-8 flex justify-center items-start">
@@ -75,7 +83,24 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Tarjetas Superiores + Tarjeta Flotante de Origen de Dinero -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          
+          <!-- TARJETA AÑADIDA: Origen de Ingresos -->
+          <div class="glass-card p-4 flex flex-col justify-between border-emerald-500/30">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2">
+              <span class="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="arrow-down-right" class="w-3.5 h-3.5 text-emerald-400"></i> Origen Dinero
+              </span>
+              <span class="text-[10px] text-slate-400">Fuente</span>
+            </div>
+            <div id="lista-fuentes-ingreso" class="space-y-2 mt-2 max-h-24 overflow-y-auto custom-scroll pr-1">
+              <p class="text-[11px] text-slate-500 italic text-center py-2">Sin ingresos</p>
+            </div>
+          </div>
+
+          <!-- Total en Mano -->
           <div onclick="editarDineroEnMano()" class="glass-card p-5 relative overflow-hidden cursor-pointer group hover:border-emerald-500/40 transition-all">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
@@ -86,10 +111,11 @@
               </div>
             </div>
             <div class="mt-4">
-              <h2 id="total-ingresos" class="text-2xl lg:text-3xl font-bold text-emerald-400">$0,00</h2>
+              <h2 id="total-ingresos" class="text-xl lg:text-2xl font-bold text-emerald-400">$0,00</h2>
             </div>
           </div>
 
+          <!-- Gastos Totales -->
           <div class="glass-card p-5 relative overflow-hidden">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Gastos Totales</span>
@@ -98,10 +124,11 @@
               </div>
             </div>
             <div class="mt-4">
-              <h2 id="total-gastos" class="text-2xl lg:text-3xl font-bold text-rose-400">$0,00</h2>
+              <h2 id="total-gastos" class="text-xl lg:text-2xl font-bold text-rose-400">$0,00</h2>
             </div>
           </div>
 
+          <!-- Restante -->
           <div class="glass-card p-5 relative overflow-hidden">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Restante</span>
@@ -110,7 +137,7 @@
               </div>
             </div>
             <div class="mt-4">
-              <h2 id="total-restante" class="text-2xl lg:text-3xl font-bold text-purple-300">$0,00</h2>
+              <h2 id="total-restante" class="text-xl lg:text-2xl font-bold text-purple-300">$0,00</h2>
             </div>
           </div>
         </div>
@@ -121,8 +148,8 @@
           </h3>
           <form id="form-movimiento" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs text-slate-300 mb-1">Descripción</label>
-              <input type="text" id="desc" placeholder="Ej: Fibertel, Steam..." required class="w-full rounded-xl p-2.5 text-sm glass-input">
+              <label class="block text-xs text-slate-300 mb-1">Descripción / Fuente</label>
+              <input type="text" id="desc" placeholder="Ej: Sueldo, Fibertel..." required class="w-full rounded-xl p-2.5 text-sm glass-input">
             </div>
             <div>
               <label class="block text-xs text-slate-300 mb-1">Monto ($)</label>
@@ -219,6 +246,7 @@
     const totalIngresosEl = document.getElementById('total-ingresos');
     const totalGastosEl = document.getElementById('total-gastos');
     const totalRestanteEl = document.getElementById('total-restante');
+    const listaFuentesIngreso = document.getElementById('lista-fuentes-ingreso');
     const listaFijos = document.getElementById('lista-fijos');
     const listaVariables = document.getElementById('lista-variables');
     const listaDeseos = document.getElementById('lista-deseos');
@@ -236,6 +264,14 @@
       return num.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    function obtenerFechaActual() {
+      const hoy = new Date();
+      const dd = String(hoy.getDate()).padStart(2, '0');
+      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+      const aa = String(hoy.getFullYear()).slice(-2);
+      return `${dd}/${mm}/${aa}`;
+    }
+
     function guardarYActualizar() {
       localStorage.setItem('billetera_movimientos', JSON.stringify(movimientos));
       localStorage.setItem('billetera_deseos', JSON.stringify(deseos));
@@ -250,7 +286,13 @@
 
       if (!desc || isNaN(monto)) return;
 
-      movimientos.push({ id: Date.now(), desc, monto, categoria });
+      movimientos.push({ 
+        id: Date.now(), 
+        desc, 
+        monto, 
+        categoria, 
+        fecha: obtenerFechaActual() 
+      });
       guardarYActualizar();
       form.reset();
     }
@@ -294,7 +336,8 @@
           id: Date.now(),
           desc: 'Dinero Inicial',
           monto: nuevoMonto,
-          categoria: 'ingreso'
+          categoria: 'ingreso',
+          fecha: obtenerFechaActual()
         });
       }
       guardarYActualizar();
@@ -312,53 +355,73 @@
       let ingresos = 0;
       let gastos = 0;
 
+      listaFuentesIngreso.innerHTML = '';
       listaFijos.innerHTML = '';
       listaVariables.innerHTML = '';
       listaDeseos.innerHTML = '';
 
+      let fuentesCount = 0;
       let fijosCount = 0;
       let variablesCount = 0;
 
       movimientos.forEach(m => {
+        const fechaTexto = m.fecha || obtenerFechaActual();
+
         if (m.categoria === 'ingreso') {
           ingresos += m.monto;
+          fuentesCount++;
+
+          // Plantilla para la tarjeta "Origen Dinero"
+          listaFuentesIngreso.innerHTML += `
+            <div class="flex justify-between items-center bg-white/5 p-1.5 rounded-lg border border-white/5">
+              <div class="truncate mr-1">
+                <p class="text-[11px] text-slate-200 font-medium truncate">${m.desc}</p>
+                <p class="text-[9px] text-slate-400">${fechaTexto}</p>
+              </div>
+              <span class="text-[11px] font-bold text-emerald-400">+$${formatearMonto(m.monto)}</span>
+            </div>
+          `;
         } else {
           gastos += m.monto;
-        }
 
-        const badge = categoriaBadges[m.categoria] || categoriaBadges.otros;
-        const isFijo = ['internet', 'cuotas'].includes(m.categoria);
+          const badge = categoriaBadges[m.categoria] || categoriaBadges.otros;
+          const isFijo = ['internet', 'cuotas'].includes(m.categoria);
 
-        const cardHTML = `
-          <div class="flex items-center justify-between p-3 rounded-2xl glass-card border border-white/5 hover:border-white/20 transition-all">
-            <div class="flex items-center gap-3">
-              <span class="text-xs px-2.5 py-1 rounded-full border ${badge.color} font-medium">
-                ${badge.label}
-              </span>
-              <div>
-                <p class="text-sm font-medium text-white">${m.desc}</p>
+          const cardHTML = `
+            <div class="flex items-center justify-between p-3 rounded-2xl glass-card border border-white/5 hover:border-white/20 transition-all">
+              <div class="flex items-center gap-3">
+                <span class="text-xs px-2.5 py-1 rounded-full border ${badge.color} font-medium">
+                  ${badge.label}
+                </span>
+                <div>
+                  <p class="text-sm font-medium text-white">${m.desc}</p>
+                  <p class="text-[10px] text-slate-400">${fechaTexto}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-bold text-slate-200">
+                  -$${formatearMonto(m.monto)}
+                </span>
+                <button onclick="eliminarMovimiento(${m.id})" class="text-slate-500 hover:text-rose-400 transition-colors">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
               </div>
             </div>
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-bold ${m.categoria === 'ingreso' ? 'text-emerald-400' : 'text-slate-200'}">
-                ${m.categoria === 'ingreso' ? '+' : '-'}$${formatearMonto(m.monto)}
-              </span>
-              <button onclick="eliminarMovimiento(${m.id})" class="text-slate-500 hover:text-rose-400 transition-colors">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        `;
+          `;
 
-        if (isFijo) {
-          listaFijos.innerHTML += cardHTML;
-          fijosCount++;
-        } else if (m.categoria !== 'ingreso') {
-          listaVariables.innerHTML += cardHTML;
-          variablesCount++;
+          if (isFijo) {
+            listaFijos.innerHTML += cardHTML;
+            fijosCount++;
+          } else {
+            listaVariables.innerHTML += cardHTML;
+            variablesCount++;
+          }
         }
       });
 
+      if (fuentesCount === 0) {
+        listaFuentesIngreso.innerHTML = '<p class="text-[11px] text-slate-500 italic text-center py-2">Sin ingresos</p>';
+      }
       if (fijosCount === 0) {
         listaFijos.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">Sin gastos fijos registrados</p>';
       }
@@ -418,4 +481,4 @@
     render();
   </script>
 </body>
-</html>"""
+</html>
