@@ -32,6 +32,13 @@
       border-color: rgba(168, 85, 247, 0.6);
       background: rgba(255, 255, 255, 0.1);
     }
+    .glass-dropdown {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
     .glass-button {
       background: linear-gradient(135deg, rgba(168, 85, 247, 0.6), rgba(124, 58, 237, 0.6));
       backdrop-filter: blur(10px);
@@ -52,13 +59,16 @@
       background: rgba(244, 63, 94, 0.4);
       box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
     }
-    /* Scroll personalizado para la lista de ingresos */
     .custom-scroll::-webkit-scrollbar {
       width: 4px;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 4px;
+    }
+    ::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -82,12 +92,10 @@
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- COLUMNA IZQUIERDA Y CENTRO -->
       <div class="lg:col-span-2 space-y-6">
         
-        <!-- Tarjetas Superiores + Tarjeta Flotante de Origen de Dinero -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          
-          <!-- TARJETA AÑADIDA: Origen de Ingresos -->
           <div class="glass-card p-4 flex flex-col justify-between border-emerald-500/30">
             <div class="flex justify-between items-center border-b border-white/10 pb-2">
               <span class="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider flex items-center gap-1">
@@ -100,7 +108,6 @@
             </div>
           </div>
 
-          <!-- Total en Mano -->
           <div onclick="editarDineroEnMano()" class="glass-card p-5 relative overflow-hidden cursor-pointer group hover:border-emerald-500/40 transition-all">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
@@ -115,7 +122,6 @@
             </div>
           </div>
 
-          <!-- Gastos Totales -->
           <div class="glass-card p-5 relative overflow-hidden">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Gastos Totales</span>
@@ -128,7 +134,6 @@
             </div>
           </div>
 
-          <!-- Restante -->
           <div class="glass-card p-5 relative overflow-hidden">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Restante</span>
@@ -155,17 +160,38 @@
               <label class="block text-xs text-slate-300 mb-1">Monto ($)</label>
               <input type="number" id="monto" placeholder="0.00" min="0" step="0.01" required class="w-full rounded-xl p-2.5 text-sm glass-input">
             </div>
-            <div>
+            
+            <div class="relative">
               <label class="block text-xs text-slate-300 mb-1">Categoría</label>
-              <select id="categoria" class="w-full rounded-xl p-2.5 text-sm glass-input bg-slate-900/80">
-                <option value="ingreso">💰 Dinero en Mano (Ingreso)</option>
-                <option value="internet">🌐 Internet y Servicios (Fijo)</option>
-                <option value="cuotas">💳 Cuotas a Pagar (Fijo)</option>
-                <option value="juegos">🎮 Juegos y Suscripciones</option>
-                <option value="kiosco">🍬 Kiosco / Gastos Diarios</option>
-                <option value="otros">📦 Otros Gastos</option>
-              </select>
+              <input type="hidden" id="categoria" value="ingreso">
+              
+              <button type="button" id="dropdown-btn" onclick="toggleDropdown()" class="w-full rounded-xl p-2.5 text-sm glass-input flex items-center justify-between text-left">
+                <span id="dropdown-label">💰 Dinero en Mano (Ingreso)</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+              </button>
+
+              <div id="dropdown-menu" class="hidden absolute top-full left-0 right-0 mt-2 rounded-2xl glass-dropdown p-2 z-50 space-y-1">
+                <div onclick="selectOption('ingreso', '💰 Dinero en Mano (Ingreso)')" class="p-2.5 rounded-xl hover:bg-white/10 cursor-pointer text-xs transition-colors flex items-center gap-2">
+                  💰 Dinero en Mano (Ingreso)
+                </div>
+                <div onclick="selectOption('internet', '🌐 Internet y Servicios (Fijo)')" class="p-2.5 rounded-xl hover:bg-white/10 cursor-pointer text-xs transition-colors flex items-center gap-2">
+                  🌐 Internet y Servicios (Fijo)
+                </div>
+                <div onclick="selectOption('cuotas', '💳 Cuotas a Pagar (Fijo)')" class="p-2.5 rounded-xl hover:bg-white/10 cursor-pointer text-xs transition-colors flex items-center gap-2">
+                  💳 Cuotas a Pagar (Fijo)
+                </div>
+                <div onclick="selectOption('juegos', '🎮 Juegos y Suscripciones')" class="p-2.5 rounded-xl hover:bg-white/10 cursor-pointer text-xs transition-colors flex items-center gap-2">
+                  🎮 Juegos y Suscripciones
+                </div>
+                <div onclick="selectOption('kiosco', '🍬 Kiosco / Gastos Diarios')" class="p-2.5 rounded-xl hover:bg-white/10 cursor-pointer text-xs transition-colors flex items-center gap-2">
+                  🍬 Kiosco / Gastos Diarios
+                </div>
+                <div onclick="selectOption('otros', '📦 Otros Gastos')" class="p-2.5 rounded-xl hover:bg-white/10 cursor-pointer text-xs transition-colors flex items-center gap-2">
+                  📦 Otros Gastos
+                </div>
+              </div>
             </div>
+
             <div class="flex items-end">
               <button type="submit" class="w-full py-2.5 px-4 rounded-xl font-semibold text-sm glass-button flex items-center justify-center gap-2 text-white">
                 <i data-lucide="check" class="w-4 h-4"></i> Agregar
@@ -201,7 +227,51 @@
         </section>
       </div>
 
+      <!-- COLUMNA DERECHA -->
       <div class="space-y-6">
+        
+        <!-- CUOTAS PENDIENTES CON FECHA DE VENCIMIENTO -->
+        <section class="glass-card p-6 space-y-5 border-indigo-500/20">
+          <div class="border-b border-white/10 pb-3">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+              <i data-lucide="credit-card" class="w-5 h-5 text-indigo-400"></i> Cuotas Pendientes
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Seguimiento de vencimientos y cuotas restantes.</p>
+          </div>
+
+          <form id="form-plan-cuotas" class="space-y-3">
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">Producto / Servicio</label>
+              <input type="text" id="cuota-nombre" placeholder="Ej: Zapatillas, Placa de Video..." required class="w-full rounded-xl p-2.5 text-sm glass-input">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs text-slate-300 mb-1">Monto Cuota ($)</label>
+                <input type="number" id="cuota-monto" placeholder="0.00" min="0" step="0.01" required class="w-full rounded-xl p-2.5 text-sm glass-input">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-300 mb-1">Cant. Cuotas</label>
+                <input type="number" id="cuota-totales" placeholder="Ej: 6" min="1" step="1" required class="w-full rounded-xl p-2.5 text-sm glass-input">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">Próximo Vencimiento</label>
+              <input type="date" id="cuota-vencimiento" required class="w-full rounded-xl p-2.5 text-sm glass-input">
+            </div>
+            <button type="submit" class="w-full py-2.5 px-4 rounded-xl font-semibold text-sm glass-button flex items-center justify-center gap-2 text-white">
+              <i data-lucide="plus" class="w-4 h-4"></i> Guardar Plan
+            </button>
+          </form>
+
+          <div class="space-y-3 pt-2">
+            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Mis Planes Activos</h4>
+            <div id="lista-cuotas-pendientes" class="space-y-3">
+              <p class="text-xs text-slate-500 italic text-center py-4">No tienes cuotas registradas</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- LISTA DE DESEOS -->
         <section class="glass-card p-6 space-y-5 border-amber-500/20">
           <div class="border-b border-white/10 pb-3">
             <h3 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -231,6 +301,7 @@
             </div>
           </div>
         </section>
+
       </div>
     </div>
   </div>
@@ -240,16 +311,21 @@
 
     let movimientos = JSON.parse(localStorage.getItem('billetera_movimientos')) || [];
     let deseos = JSON.parse(localStorage.getItem('billetera_deseos')) || [];
+    let planesCuotas = JSON.parse(localStorage.getItem('billetera_cuotas')) || [];
 
     const form = document.getElementById('form-movimiento');
     const formDeseo = document.getElementById('form-deseo');
+    const formCuotas = document.getElementById('form-plan-cuotas');
+    
     const totalIngresosEl = document.getElementById('total-ingresos');
     const totalGastosEl = document.getElementById('total-gastos');
     const totalRestanteEl = document.getElementById('total-restante');
+    
     const listaFuentesIngreso = document.getElementById('lista-fuentes-ingreso');
     const listaFijos = document.getElementById('lista-fijos');
     const listaVariables = document.getElementById('lista-variables');
     const listaDeseos = document.getElementById('lista-deseos');
+    const listaCuotasPendientes = document.getElementById('lista-cuotas-pendientes');
 
     const categoriaBadges = {
       ingreso: { label: 'Ingreso', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
@@ -259,6 +335,25 @@
       kiosco: { label: 'Kiosco', color: 'bg-pink-500/20 text-pink-300 border-pink-500/30' },
       otros: { label: 'Otros', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30' }
     };
+
+    function toggleDropdown() {
+      const menu = document.getElementById('dropdown-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function selectOption(val, text) {
+      document.getElementById('categoria').value = val;
+      document.getElementById('dropdown-label').textContent = text;
+      document.getElementById('dropdown-menu').classList.add('hidden');
+    }
+
+    window.addEventListener('click', (e) => {
+      const btn = document.getElementById('dropdown-btn');
+      const menu = document.getElementById('dropdown-menu');
+      if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
 
     function formatearMonto(num) {
       return num.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -272,9 +367,39 @@
       return `${dd}/${mm}/${aa}`;
     }
 
+    function formatearFechaEspanol(fechaISO) {
+      if (!fechaISO) return '';
+      const [year, month, day] = fechaISO.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    function calcularEstadoVencimiento(fechaISO) {
+      if (!fechaISO) return { texto: 'Sin fecha', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30' };
+      
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      
+      const [year, month, day] = fechaISO.split('-');
+      const fechaVenc = new Date(year, month - 1, day);
+      
+      const diffTiempo = fechaVenc - hoy;
+      const diffDias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
+
+      if (diffDias < 0) {
+        return { texto: `🚨 Vencida hace ${Math.abs(diffDias)}d`, color: 'bg-rose-500/30 text-rose-300 border-rose-500/50' };
+      } else if (diffDias === 0) {
+        return { texto: '⚠️ Vence Hoy', color: 'bg-amber-500/30 text-amber-300 border-amber-500/50' };
+      } else if (diffDias <= 5) {
+        return { texto: `⏰ Vence en ${diffDias}d`, color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
+      } else {
+        return { texto: `📅 Vence: ${day}/${month}`, color: 'bg-sky-500/20 text-sky-300 border-sky-500/30' };
+      }
+    }
+
     function guardarYActualizar() {
       localStorage.setItem('billetera_movimientos', JSON.stringify(movimientos));
       localStorage.setItem('billetera_deseos', JSON.stringify(deseos));
+      localStorage.setItem('billetera_cuotas', JSON.stringify(planesCuotas));
       render();
     }
 
@@ -295,6 +420,7 @@
       });
       guardarYActualizar();
       form.reset();
+      selectOption('ingreso', '💰 Dinero en Mano (Ingreso)');
     }
 
     function agregarDeseo(e) {
@@ -307,6 +433,62 @@
       deseos.push({ id: Date.now(), nombre, precio });
       guardarYActualizar();
       formDeseo.reset();
+    }
+
+    function agregarPlanCuotas(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('cuota-nombre').value.trim();
+      const montoCuota = parseFloat(document.getElementById('cuota-monto').value);
+      const totalCuotas = parseInt(document.getElementById('cuota-totales').value);
+      const fechaVencimiento = document.getElementById('cuota-vencimiento').value;
+
+      if (!nombre || isNaN(montoCuota) || isNaN(totalCuotas) || totalCuotas <= 0 || !fechaVencimiento) return;
+
+      planesCuotas.push({
+        id: Date.now(),
+        nombre,
+        montoCuota,
+        totalCuotas,
+        pagadas: 0,
+        fechaVencimiento
+      });
+
+      guardarYActualizar();
+      formCuotas.reset();
+    }
+
+    function pagarCuota(id) {
+      const plan = planesCuotas.find(p => p.id === id);
+      if (!plan) return;
+
+      if (plan.pagadas < plan.totalCuotas) {
+        plan.pagadas += 1;
+
+        // Calcular la nueva fecha de vencimiento para el próximo mes
+        if (plan.fechaVencimiento) {
+          const [year, month, day] = plan.fechaVencimiento.split('-').map(Number);
+          const nuevaFecha = new Date(year, month, day); 
+          const y = nuevaFecha.getFullYear();
+          const m = String(nuevaFecha.getMonth() + 1).padStart(2, '0');
+          const d = String(nuevaFecha.getDate()).padStart(2, '0');
+          plan.fechaVencimiento = `${y}-${m}-${d}`;
+        }
+        
+        movimientos.push({
+          id: Date.now(),
+          desc: `${plan.nombre} (Cuota ${plan.pagadas}/${plan.totalCuotas})`,
+          monto: plan.montoCuota,
+          categoria: 'cuotas',
+          fecha: obtenerFechaActual()
+        });
+
+        guardarYActualizar();
+      }
+    }
+
+    function eliminarCuota(id) {
+      planesCuotas = planesCuotas.filter(p => p.id !== id);
+      guardarYActualizar();
     }
 
     function eliminarMovimiento(id) {
@@ -347,6 +529,7 @@
       if (confirm('¿Estás seguro de que quieres borrar todos los datos?')) {
         movimientos = [];
         deseos = [];
+        planesCuotas = [];
         guardarYActualizar();
       }
     }
@@ -359,6 +542,7 @@
       listaFijos.innerHTML = '';
       listaVariables.innerHTML = '';
       listaDeseos.innerHTML = '';
+      listaCuotasPendientes.innerHTML = '';
 
       let fuentesCount = 0;
       let fijosCount = 0;
@@ -371,7 +555,6 @@
           ingresos += m.monto;
           fuentesCount++;
 
-          // Plantilla para la tarjeta "Origen Dinero"
           listaFuentesIngreso.innerHTML += `
             <div class="flex justify-between items-center bg-white/5 p-1.5 rounded-lg border border-white/5">
               <div class="truncate mr-1">
@@ -429,6 +612,48 @@
         listaVariables.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">Sin gastos variables registrados</p>';
       }
 
+      // Render Planes de Cuotas Pendientes
+      if (planesCuotas.length === 0) {
+        listaCuotasPendientes.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">No tienes cuotas registradas</p>';
+      } else {
+        planesCuotas.forEach(plan => {
+          const completado = plan.pagadas >= plan.totalCuotas;
+          const cuotasRestantes = plan.totalCuotas - plan.pagadas;
+          const deudaRestante = cuotasRestantes * plan.montoCuota;
+          const estadoVencimiento = calcularEstadoVencimiento(plan.fechaVencimiento);
+
+          listaCuotasPendientes.innerHTML += `
+            <div class="p-3.5 rounded-2xl glass-card border ${completado ? 'border-emerald-500/30' : 'border-indigo-500/20'} space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h5 class="text-sm font-semibold text-white">${plan.nombre}</h5>
+                  <p class="text-xs text-indigo-300 font-medium">$${formatearMonto(plan.montoCuota)} / mes</p>
+                </div>
+                <button onclick="eliminarCuota(${plan.id})" class="text-slate-500 hover:text-rose-400 transition-colors">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+              <div class="flex justify-between items-center text-xs text-slate-300 pt-1">
+                <span>Estado: <strong class="${completado ? 'text-emerald-400' : 'text-indigo-400'}">${plan.pagadas}/${plan.totalCuotas} pagadas</strong></span>
+                ${!completado ? `<span class="text-xs px-2 py-0.5 rounded-full border ${estadoVencimiento.color} font-medium">${estadoVencimiento.texto}</span>` : ''}
+              </div>
+
+              ${!completado ? `
+                <button onclick="pagarCuota(${plan.id})" class="w-full mt-2 py-1.5 px-3 rounded-xl bg-indigo-600/40 hover:bg-indigo-600/60 border border-indigo-400/30 text-xs text-white font-medium flex items-center justify-center gap-1.5 transition-colors">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-indigo-300"></i> Pagar 1 Cuota
+                </button>
+              ` : `
+                <div class="w-full mt-2 py-1 px-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-[11px] text-emerald-300 text-center font-medium">
+                  🎉 ¡Plan Finalizado!
+                </div>
+              `}
+            </div>
+          `;
+        });
+      }
+
+      // Render Lista de Deseos
       const restante = ingresos - gastos;
 
       totalIngresosEl.textContent = `$${formatearMonto(ingresos)}`;
@@ -478,6 +703,7 @@
 
     form.addEventListener('submit', agregarMovimiento);
     formDeseo.addEventListener('submit', agregarDeseo);
+    formCuotas.addEventListener('submit', agregarPlanCuotas);
     render();
   </script>
 </body>
